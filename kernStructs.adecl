@@ -1,0 +1,23 @@
+.def UserPS {
+	pid:8.
+	threadc:8.
+	threadStates:32.
+	sp:32.
+	ir:32.
+	cstr:16.
+	esr:16.
+	gpr
+}
+
+
+	uint8_t pid; // +0x0
+	uint8_t threadc; // +0x1
+	PTS** threadStates; // +0x2
+	uint32_t sp; // +0x6
+	uint32_t ir; // +10
+	uint16_t cstr; // +14
+	uint16_t esr; // +16
+	uint32_t gpr[25]; // +18 ...
+	float fpr[16]; // +118 ...
+	vec_reg_t vr[6]; // +182
+	excp_t excpType; // +566
