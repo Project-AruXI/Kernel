@@ -8,7 +8,7 @@
 
 .text
 	%% EVT HANDLERS %%
-	.set STDOUT, 0
+	.set STDOUT, #0
 	_writeHndlr:
 		% _write(count:u32, buffer:&u8) -> void
 		% a1: count
@@ -60,7 +60,7 @@
 
 		ub HNDLR_END
 
-		.set STDIN, 1
+		.set STDIN, #1
 	_readHndlr:
 		nop
 

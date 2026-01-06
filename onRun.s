@@ -54,7 +54,7 @@
 		and x10, x10, x11
 		mvcstr x10
 		ubr c1 % run user program
-		.set USER_RET_AT @
+		.set USER_RET_AT, @
 		% restore sp
 		ld sp, KERN_STATE_SP
 		% return value of user program is in xr
@@ -71,7 +71,7 @@
 
 
 
-	.set PS_SIZE, 570 % size that a process state takes in bytes
+	.set PS_SIZE, #570 % size that a process state takes in bytes
 	_setPS:
 		% set up the process state
 

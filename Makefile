@@ -1,6 +1,6 @@
 all:
-	arxsm onRun.s -o onRun.o
-	arxsm handlers.s -o handlers.o
-	arxsm alloc.s -o alloc.o
+	arxsm onRun.s -o onRun.ao
+	arxsm handlers.s -o handlers.ao
+	arxsm alloc.s -o alloc.ao
 
-# 	arxlnk onRun.o handlers.o alloc.o -o kern.ark --kernel
+# 	arxlnk onRun.ao handlers.ao alloc.ao -o kern.ark --kernel
