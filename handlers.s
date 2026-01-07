@@ -136,4 +136,109 @@
 		eret
 
 
+.evt
+	EVT_START:
+	% save cpu context
+	ld c1, PS_PTR
+	% ir was saved by cpu
+	% PS.sp
+	str sp, [c1, #6]
 
+	% restore kernel sp
+	ld sp, KERN_STATE_SP
+
+	ldcstr c0
+	str x0, [c1, #14]
+
+	% PS.grp[i]
+	str x0, [c1, #18]
+	str x1, [c1, #22]
+	str x2, [c1, #26]
+	str x3, [c1, #30]
+	str x4, [c1, #34]
+	str x5, [c1, #38]
+	str x6, [c1, #42]
+	str x7, [c1, #46]
+	str x8, [c1, #50]
+	str x9, [c1, #54]
+	str x10, [c1, #58]
+	str x11, [c1, #62]
+	str x17, [c1, #66]
+	str x18, [c1, #70]
+	str x19, [c1, #74]
+	str x20, [c1, #78]
+	str x21, [c1, #82]
+	str x22, [c1, #86]
+	str x23, [c1, #90]
+	str x24, [c1, #94]
+	str x25, [c1, #98]
+	str x26, [c1, #102]
+	str x27, [c1, #106]
+	str x28, [c1, #110]
+	str x29, [c1, #114]
+
+	% get the offset based off on exception number
+	resr c0
+	% save it as well
+	str c0, [c1, #16]
+
+	% if RESR is 0x0, it is a syscall, refer to a0 for offset
+	% else if it is an exception, use the RESR contents
+	cmp c0, #0x0
+	bne offsetFromExecp
+
+	% offset into table is done as follows:
+	% IR := EVT_BASE + SIZE_OF_HEADER_CODE + (INDEX * SIZE_OF_EVT_ENTRY)
+
+	offsetFromSyscall:
+	mv c0, a0
+
+	offsetFromExecp:
+	% as is
+
+	calculateOffset:
+	mv c4, #8
+	mul c2, c0, c4 % INDEX * SIZE_OF_EVT_ENTRY (8 bytes)
+	add c2, c2, HEADER_CODE_SIZE % + SIZE_OF_HEADER_CODE
+	ld c1, =#0x00040000
+	add c2, c2, c1 % + EVT_BASE
+
+	ld c0, [c2]
+	ubr c0
+	.set HEADER_CODE_SIZE, @-EVT_START + 4
+
+	%% BEGIN EVT ENTRIES %%
+	.byte 0b00000000 % syscall read
+	.hword 0x0000 % unused
+	.byte 0x00 % unsused
+	.word _readHndlr
+
+	.byte 0b00000001 % syscall write
+	.hword 0x0000
+	.byte 0x00
+	.word _writeHndlr
+
+	.byte 0b00000010 % syscall exit
+	.hword 0x0000
+	.byte 0x00
+	.word _exitHndlr
+
+	% pad in for now
+	% an entry is 8 bytes, 9 entries between write and first exception, 9 * 8 = 72 bytes
+	.zero 72
+	% ....
+
+	.byte 0b01001100 % exception for invalid access
+	.hword 0x0000
+	.byte 0x00
+	.word _excpHndlr0
+
+	.byte 0b10001101 % exception for invalid instruction
+	.hword 0x0000
+	.byte 0x00
+	.word _excpHndlr1
+
+	.byte 0b01001110 % exception for privilege use
+	.hword 0x0000
+	.byte 0x00
+	.word _excpHndlr2
