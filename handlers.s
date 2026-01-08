@@ -225,7 +225,7 @@
 
 	% pad in for now
 	% an entry is 8 bytes, 9 entries between write and first exception, 9 * 8 = 72 bytes
-	.zero 72
+	.zero #72
 	% ....
 
 	.byte 0b01001100 % exception for invalid access
